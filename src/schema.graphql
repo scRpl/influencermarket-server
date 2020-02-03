@@ -1,0 +1,114 @@
+type Query {
+  feed(filter: String, skip: Int, first: Int, orderBy: PostOrderByInput, id: ID): Feed!
+  post(id: ID!): Post
+  votes: [Vote!]!
+  users: [User!]!
+  user(id: ID, email: String): User
+}
+
+type Feed {
+  posts: [Post!]!
+  count: Int!
+}
+
+type Mutation {
+  # Posts
+  post(url: String!, description: String!): Post!
+  updatePost(id: ID!, url: String, description: String): Post
+  deletePost(id: ID!): Post
+
+  # Signup and Login
+  signup(
+    email: String!, 
+    password: String!, 
+    confirmedPassword: String!, 
+    name: String!, 
+    imageUrl: String, 
+    bio: String, 
+    website: String, 
+    location: String
+    ): AuthPayload
+  login(email: String!, password: String!): AuthPayload
+  updateUser(id: ID!, bio: String, website: String, location: String): User
+  removeAccount(email: String!): User
+
+  # Votes
+  vote(postId: ID!): Vote
+
+  # Comments
+  comment(postId: ID! body: String!): Comment
+  updateComment(id: ID! body: String!): Comment
+  deleteComment(id: ID!): Comment
+
+  # Likes
+  like(commentId: ID!): Like
+}
+
+type Post {
+  id: ID!
+  description: String!
+  url: String!
+  postedBy: User
+  votes: [Vote!]!
+  comments: [Comment!]!
+  commentsCount: Int!
+  votesCount: Int!
+  createdAt: String
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+  confirmedPassword: String!
+  imageUrl: String!
+  bio: String!
+  website: String!
+  location: String!
+  posts: [Post!]!
+  postsCount: Int!
+  votes: [Vote!]!
+  comments: [Comment!]!
+  likes: [Like!]!
+}
+
+type Subscription {
+  newPost: Post
+  newVote: Vote
+  newLike: Like
+}
+
+type Vote {
+  id: ID!
+  post: Post
+  user: User!
+}
+
+type Comment {
+  id: ID!
+  post: Post!
+  likes: [Like!]!
+  body: String!
+  writtenBy: User!
+}
+
+type Like {
+  id: ID!
+  comment: Comment!
+  user: User!
+}
+
+enum PostOrderByInput {
+  description_ASC
+  description_DESC
+  url_ASC
+  url_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
